@@ -1,0 +1,395 @@
+<html>
+   <head>
+       <meta name="viewport" content="user-scalable=no" >
+   	<title>My game</title>
+   	<style>
+#container {
+  width: 100%;
+  height: 1000px;
+  background: #4CAF50;
+  position: relative;
+}
+#box {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: red;
+  position: absolute;
+  }
+ #bit {
+  width: 100px;
+  height: 50px;
+  top: 950px;
+  background: yellow;
+  position: absolute;
+ }
+ #score {
+  width: 100%;
+  height: 200px;
+  top: 220px;
+  color: blue;
+  position: absolute;
+ }
+ .obs{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: lightgoldenrodyellow;
+  position: absolute;
+  }
+ #obs1{
+  top: 220px;
+  left: 400px;
+  }
+  #obs2{
+  top: 420px;
+  left: 100px;
+  }
+  #obs3{
+  top: 420px;
+  left: 700px;
+  }
+ #obs4{
+  top: 620px;
+  left: 400px;
+  }
+ #btnLeft{
+  width: 49.5%;  /*478px*/
+  height: 90px;
+  vertical-align: middle; 
+  line-height: 22px;
+  }
+ #btnRight {
+  width: 49.5%;  /*478px*/
+  height: 90px;
+  vertical-align: middle; 
+  line-height: 22px;
+  }
+#btnStart {
+  width: 49.5%;
+  height: 90px;
+  vertical-align: middle; 
+  line-height: 10px;
+  }
+ #btnStop {
+  width: 49.5%;
+  height: 90px;
+  vertical-align: middle;
+  line-height: 10px;
+  }
+.slidecontainer {
+    width: 100%; /* 100% Width of the outside container */
+}
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 150px;
+    border-radius: 5px;   
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; 
+    background: #4CAF50;
+    cursor: pointer;
+}
+.slider::-moz-range-thumb {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+  p.large {font-size: 1000%;}
+  p.medium {font-size: 300%;}
+ 
+</style>
+
+</head>
+      <body>
+         <div id="container">
+	        <div id="score" align="center"><p class="large" >R: #1 <br> S: 0</p></div>
+            <div class="obs" id="obs1"></div>
+            <div class="obs" id="obs2"></div>
+            <div class="obs" id="obs3"></div>
+            <div class="obs" id="obs4"></div>
+            <div id="box"> </div>
+            <div id="bit"> </div>
+        </div>
+          <hr color: white; size: 10>
+     <!--   <button id="btnLeft" onclick="BitLeft()"> <p class="medium" > < < < </p></button> -->
+           <!--   <button id="btnRight" onclick="BitRight()"> <p class="medium"> > > > </p></button>  -->
+             <!--    <hr color: white; size: 10> -->
+        <div class="slidecontainer">
+          <input type="range" min="0" max="870" value="0" step="10" class="slider" id="myRange">
+        </div>	
+          <hr color: white; size: 10>
+        <button id="btnStart" onclick="Start()"> <p class="medium">Start</p></button>
+        <button id="btnStop" onclick="Stop()"><p class="medium">Stop</p></button>
+        
+      </body>
+   <script>
+   	
+var box = document.getElementById("box");
+var bit = document.getElementById("bit");
+var txtscore = document.getElementById("score");	
+var obs1 = document.getElementById("obs1");	
+var obs2 = document.getElementById("obs2");	
+var obs3 = document.getElementById("obs3");	
+var obs4 = document.getElementById("obs4");	
+var container =  document.getElementById("container");	
+var slider = document.getElementById("myRange");
+
+ var posx = 0; 
+ var posy = 0; 
+ var tx = 0;
+ var speed = 10;
+ var wayx= "right";
+ var wayy="down";
+ var posbitx=0;
+ var onaction=false;
+ var stepx = 5;
+ var stepy = 5;
+ var stepbit =100;
+ var lengthbit =100;//parseInt(bit.getBoundingClientRect().height, 10);
+ var bitheight=50;
+ var contwidth=970;//parseInt(container.width, 10);
+ var contheight=1220;
+ var boxwidth=50;
+ var boxheight=50;
+ var obswidth=100;
+ var obsheight=100;
+ var obstop=220;
+ var obstop2=500;
+ var obstop3=800;
+ 
+ var score = 0;
+ var round = 1; // 5
+
+//our elements
+container.style.height=contheight+"px";
+container.style.width=contwidth+"px";
+box.style.height=boxheight+"px";
+box.style.width=boxwidth+"px";
+bit.style.height=bitheight+"px";
+bit.style.width=lengthbit+"px";
+bit.style.top=(contheight-bitheight)+"px";
+obs1.style.height=obsheight+"px";
+obs1.style.width=obswidth+"px";
+obs1.style.top=obstop+"px";
+obs1.style.left=(contwidth/2-obswidth/2)+"px";
+obs2.style.height=obsheight+"px";
+obs2.style.width=obswidth+"px";
+obs2.style.top=obstop2+"px";
+obs2.style.left=(contwidth/5-obswidth/2)+"px";
+obs3.style.height=obsheight+"px";
+obs3.style.width=obswidth+"px";
+obs3.style.top=obstop2+"px";
+obs3.style.left=(contwidth-contwidth/5-obswidth/2)+"px";
+obs4.style.height=obsheight+"px";
+obs4.style.width=obswidth+"px";
+obs4.style.top=obstop3+"px";
+obs4.style.left=(contwidth/2-obswidth/2)+"px";
+
+function MoveLeft() {
+  if (wayx =="right") {
+      if(posx >= (contwidth-boxwidth)) {wayx="left";stepx=5;}
+      else {posx += stepx;
+                box.style.left = posx+"px";}
+               }
+  else {
+      if(posx <= 0) {wayx="right";stepx=5;}
+      else {posx -= stepx;
+               box.style.left = posx+"px";}
+              }
+}
+
+function MoveTop() {
+  if (wayy =="down") {
+      if(posy>= (contheight-boxheight)) {wayy="top";stepy=5;}
+      else {posy+= stepy;
+                box.style.top= posy+"px";}
+               }
+  else {
+      if(posy<= 0) {wayy="down"; stepy=5;}
+      else {posy-= stepy;
+               box.style.top= posy+"px";}
+              }
+}
+
+slider.oninput = function() {
+    posbitx =parseInt(this.value, 10);
+    bit.style.left=posbitx+"px";
+}
+
+function BitLeft() {
+	if((posbitx-stepbit)<=0) {posbitx=0;}
+	else {posbitx-=stepbit;}
+	bit.style.left=posbitx+"px";
+	slider.value=posbitx;
+}
+
+function BitRight() {
+	if((posbitx+stepbit)>=(contwidth-lengthbit)) {
+		posbitx=(contwidth-lengthbit);}
+	else {posbitx+=stepbit;}
+	bit.style.left=posbitx+"px";
+	slider.value=posbitx;
+}
+
+function GetScore() {
+	score ++;
+    switch (score) {
+    	case 10:
+          Stop();
+      	alert("Round #2");
+          round ++;
+          speed -=1;
+          Start();
+          break;
+        case 20:
+          Stop();
+      	alert("Round #3");
+          round ++;
+          speed -=1;
+          Start();
+          break;
+        case 30:
+          Stop();
+      	alert("Round #4");
+          round ++;
+          speed -=2;
+          Start();
+          break;
+        case 40:
+          Stop();
+      	alert("Round #5");
+          round ++;
+          speed -=2;
+          Start();
+          break;    
+        case 50:
+          Stop();
+      	alert("You are winner!");
+          round=1;
+          speed=10;
+          score=0;
+          break; 
+        default:
+          //continue
+      }
+      txtscore.innerHTML="<p class='large'> R: #" + round + "<br> S: " + score + "</p>";
+}
+	
+
+function BoxOnBit() {
+	let x=posx;
+	let y=posy;
+	let x1=posbitx;
+	let y1=(contheight-bitheight);
+	
+	if((y+boxheight)>=y1 && y<y1 && wayy=="down") {
+		if((x+boxwidth)>=x1 && x<=(x1+lengthbit)) {
+			//alert(x + " "+(x1+lengthbit));
+			wayy="top";
+			stepy+=(Math.random() * 10) + 1;
+			posy -= stepy;
+			box.style.top= posy+"px";
+		    stepx +=1;
+		    GetScore();
+			}
+		}
+}
+
+function BoxOnObs(obsleftx, obstopy) {
+	let x=posx;
+	let y=posy;
+	let x2=posx+boxwidth;
+	let y2=posy+boxheight;
+	//let obsleftx=(contwidth/2-obswidth/2);
+	let obsrightx=(obsleftx+obswidth);
+	//let obstopy=obstop;
+	let obsdowny=(obstopy+obsheight);
+	let flag=false;
+	
+	function CheckX(x) {
+		if (x>=obsleftx && x<=obsrightx) {return true;}
+        else {return false;}
+	}
+	
+	function CheckY(y) {
+		if (y>=obstopy && y<=obsdowny) {return true;}
+        else {return false;}
+     }
+
+//Left side of obst
+    if (flag==false) {
+      if (CheckX(x2)==true && (CheckY(y)==true || CheckY(y2)==true)) {
+          wayx="left";
+          stepx+=(Math.random() * 10) + 1;
+          posx = obsleftx-boxwidth;
+          flag=true;}
+     }
+//Right side of obst
+     if (flag==false) {
+     	if (CheckX(x)==true && (CheckY(y)==true || CheckY(y2)==true)) {
+          wayx="right";
+          stepx+=(Math.random() * 10) + 1;
+          posx = obsrightx;
+          flag=true;}
+     }
+ //Top side of obst
+     if (flag==false) {
+     	if (CheckY(y2)==true && (CheckX(x)==true || CheckX(x2)==true)) {
+          wayy="top";
+          stepy+=(Math.random() * 10) + 1;
+          posy=obstopy-boxheight;
+          flag=true;}
+     }     
+// Down of obst
+      if (flag==false) {
+     	if (CheckY(y)==true && (CheckX(x)==true || CheckX(x2)==true)) {
+          wayy="down";
+          stepy+=(Math.random() * 10) + 1;
+          posy=obsdowny;
+          flag=true;}
+     }       
+     if (flag==true) {
+     	box.style.left = posx+"px";
+     	box.style.top= posy+"px";
+         MoveTop();}
+}
+
+function Start() {
+   if(onaction==false) {
+       onaction=true;
+       tx = setInterval(move, speed);}
+}
+	
+function Stop() {
+    clearInterval(tx);
+    onaction=false;
+}
+
+function move() {
+	onaction=true;
+	MoveLeft();
+	MoveTop();
+	BoxOnObs(contwidth/2-obswidth/2, obstop);
+	BoxOnObs(contwidth/5-obswidth/2, obstop2);
+	BoxOnObs(contwidth-contwidth/5-obswidth/2, obstop2);
+	BoxOnObs(contwidth/2-obswidth/2, obstop3);
+	BoxOnBit();
+}
+
+tx = setInterval(move, speed);
+//alert(posx);
+   	</script>
+</html>
